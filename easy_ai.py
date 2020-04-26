@@ -54,14 +54,16 @@ def data_norm(x):
         
     return x
 
+def __fit_model(name, clf, x_train, y_train):
+    clf.fit(x_train, y_train)
+    accuracy = clf.score(x_test, y_test)
+    model = pickle.dumps(clf)
+    return [name, accuracy, model]
 
 #still need to add optimization over hyperparameters
 def k_nearest(x_train, y_train, x_test, y_test):
     clf = KNeighborsClassifier(n_neighbors = 3)
-    clf.fit(x_train, y_train)
-    accuracy = clf.score(x_test, y_test)
-    model = pickle.dumps(clf)
-    return ['k_nearest', accuracy, model]
+    return __fit_model('k_nearest', clf, x_train, y_train)
 
 def support_vector_machine(x_train, y_train, x_test, y_test):
     accuracy_arr = []
@@ -93,48 +95,30 @@ def support_vector_machine(x_train, y_train, x_test, y_test):
 def gaussian_process_classifier(x_train, y_train, x_test, y_test):
     kernel = 1.0 * RBF(1.0)
     clf = GaussianProcessClassifier(kernel = kernel, random_state = 0)
-    clf.fit(x_train, y_train)
-    accuracy = clf.score(x_test, y_test)
-    model = pickle.dumps(clf)
-    return ['gaussian_process', accuracy, model]
+    return __fit_model('gaussian_process', clf, x_train, y_train)
 
 #still need to add optimization over hyperparamters
 def decision_tree_classifier(x_train, y_train, x_test, y_test):
     clf = DecisionTreeClassifier(random_state = 0)
-    clf.fit(x_train, y_train)
-    accuracy = clf.score(x_test, y_test)
-    model = pickle.dumps(clf)
-    return ['decision_tree', accuracy, model]
+    return __fit_model('decision_tree', clf, x_train, y_train)
 
 #still need to add optimization over hyperparameters
 def random_forest_classifier(x_train, y_train, x_test, y_test):
     clf = RandomForestClassifier(max_depth = 2, random_state = 0)
-    clf.fit(x_train, y_train)
-    accuracy = clf.score(x_test, y_test)
-    model = pickle.dumps(clf)
-    return ['random_forest', accuracy, model]
+    return __fit_model('random_forest', clf, x_train, y_train)
 
 #still need to add optimization over hyperparameters
 def adaboost_classifier(x_train, y_train, x_test, y_test):
     clf = AdaBoostClassifier(n_estimators = 100, random_state = 0)
-    clf.fit(x_train, y_train)
-    accuracy = clf.score(x_test, y_test)
-    model = pickle.dumps(clf)
-    return ['adaboost', accuracy, model]
+    return __fit_model('adaboost', clf, x_train, y_train)
 
 def native_bayes(x_train, y_train, x_test, y_test):
     clf = GaussianNB()
-    clf.fit(x_train, y_train)
-    accuracy = clf.score(x_test, y_test)
-    model = pickle.dumps(clf)
-    return ['native_bayes', accuracy, model]
+    return __fit_model('native_bayes', clf, x_train, y_train)
 
 def quadratic_discriminant(x_train, y_train, x_test, y_test):
     clf = QuadraticDiscriminantAnalysis()
-    clf.fit(x_train, y_train)
-    accuracy = clf.score(x_test, y_test)
-    model = pickle.dumps(clf)
-    return ['quadratic_discriminant', accuracy, model]
+    return __fit_model('quadratic_discriminant', clf, x_train, y_train)
 
 #Do I want to add something like rerunning classifiers with the highest accuracies
 #to get a better estimate of mean accuracy?
