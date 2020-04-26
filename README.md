@@ -1,4 +1,4 @@
-#EasyAI
+# EasyAI
 
 EasyAI is a tool designed to lower the barrier to entry to 
 employ Machine Learning models. All that is required is a CSV 
@@ -11,7 +11,7 @@ process, notably separating training and testing data, and
 normalizing the dependent variables is not operational.
 
 
-##Dependencies
+## Dependencies
 
 Numpy
 ```bash
@@ -29,7 +29,7 @@ pip install minepy
 ```
 
 
-##Usage
+## Usage
 Select the csv file which contains your data, making sure that the 
 label variable is the last column in the dataset. The tool will then 
 examine several possible models and determine that which yields the 
