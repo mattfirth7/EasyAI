@@ -77,16 +77,10 @@ def support_vector_machine(x_train, y_train, x_test, y_test):
     accuracy_argmax = np.argmax(accuracy_arr)
     if accuracy_argmax == 0:
         clf = svm.SVC(kernel = 'linear', gamma = 2)
-        clf.fit(x_train, y_train)
-        accuracy = clf.score(x_test, y_test)
-        model = pickle.dumps(clf)
-        return ['linear', accuracy, model]
+        return __fit_model('linear', clf, x_train, y_train)
     elif accuracy_argmax == 1:
         clf = svm.SVC(kernel = 'poly', gamma = 2)
-        clf.fit(x_train, y_train)
-        accuracy = clf.score(x_test, y_test)
-        model = pickle.dumps(clf)
-        return ['poly', accuracy, model]
+        return __fit_model('poly', clf, x_train, y_train)
     else:
         model = pickle.dumps(clf)
         return ['rbf', accuracy, model]
@@ -133,20 +127,20 @@ def easy_classification(x_train, y_train, x_test, y_test):
     #quadratic discriminant analysis is not currently working
     #results_array.append(quadratic_discriminant(x_train, y_train, x_test, y_test))
     
-    accuracies_arr = []
-    for row in results_array:
-        accuracies_arr.append(row[1])
+    accuracies_arr = [row[1] for row in results_array]
         
     accuracy_argmax = np.argmax(accuracies_arr)
     classifier = results_array[accuracy_argmax][0]
     model = results_array[accuracy_argmax][2]
+
+    OUTPUT = 'easyml_classifier.pickle'
     
-    with open('easyml_classifier.pickle', 'wb') as f:
+    with open(OUTPUT, 'wb') as f:
         f.write(model)
         f.close()
     
     print(classifier + " model chosen. Yielded max accuracy: " + str(results_array[accuracy_argmax][1]))
-    print("Model saved as 'easyml_classifier.pickle'")
+    print("Model saved as {}".format(OUTPUT))
     return
     
 #main method still work in progress
@@ -176,10 +170,5 @@ def main():
     easy_classification(sk_learn_compatible_normed_x_train, y_train, sk_learn_compatible_normed_x_test, y_test)
     
 if __name__ == '__main__':
-    main()
-
-    
-
-    
-        
+    main()       
         
