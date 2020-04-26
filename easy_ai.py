@@ -54,14 +54,16 @@ def data_norm(x):
         
     return x
 
+def __fit_model(name, clf, x_train, y_train):
+    clf.fit(x_train, y_train)
+    accuracy = clf.score(x_test, y_test)
+    model = pickle.dumps(clf)
+    return [name, accuracy, model]
 
 #still need to add optimization over hyperparameters
 def k_nearest(x_train, y_train, x_test, y_test):
     clf = KNeighborsClassifier(n_neighbors = 3)
-    clf.fit(x_train, y_train)
-    accuracy = clf.score(x_test, y_test)
-    model = pickle.dumps(clf)
-    return ['k_nearest', accuracy, model]
+    return __fit_model('k_nearest', clf, x_train, y_train)
 
 def support_vector_machine(x_train, y_train, x_test, y_test):
     accuracy_arr = []
@@ -75,16 +77,10 @@ def support_vector_machine(x_train, y_train, x_test, y_test):
     accuracy_argmax = np.argmax(accuracy_arr)
     if accuracy_argmax == 0:
         clf = svm.SVC(kernel = 'linear', gamma = 2)
-        clf.fit(x_train, y_train)
-        accuracy = clf.score(x_test, y_test)
-        model = pickle.dumps(clf)
-        return ['linear', accuracy, model]
+        return __fit_model('linear', clf, x_train, y_train)
     elif accuracy_argmax == 1:
         clf = svm.SVC(kernel = 'poly', gamma = 2)
-        clf.fit(x_train, y_train)
-        accuracy = clf.score(x_test, y_test)
-        model = pickle.dumps(clf)
-        return ['poly', accuracy, model]
+        return __fit_model('poly', clf, x_train, y_train)
     else:
         model = pickle.dumps(clf)
         return ['rbf', accuracy, model]
@@ -93,82 +89,58 @@ def support_vector_machine(x_train, y_train, x_test, y_test):
 def gaussian_process_classifier(x_train, y_train, x_test, y_test):
     kernel = 1.0 * RBF(1.0)
     clf = GaussianProcessClassifier(kernel = kernel, random_state = 0)
-    clf.fit(x_train, y_train)
-    accuracy = clf.score(x_test, y_test)
-    model = pickle.dumps(clf)
-    return ['gaussian_process', accuracy, model]
+    return __fit_model('gaussian_process', clf, x_train, y_train)
 
 #still need to add optimization over hyperparamters
 def decision_tree_classifier(x_train, y_train, x_test, y_test):
     clf = DecisionTreeClassifier(random_state = 0)
-    clf.fit(x_train, y_train)
-    accuracy = clf.score(x_test, y_test)
-    model = pickle.dumps(clf)
-    return ['decision_tree', accuracy, model]
+    return __fit_model('decision_tree', clf, x_train, y_train)
 
 #still need to add optimization over hyperparameters
 def random_forest_classifier(x_train, y_train, x_test, y_test):
     clf = RandomForestClassifier(max_depth = 2, random_state = 0)
-    clf.fit(x_train, y_train)
-    accuracy = clf.score(x_test, y_test)
-    model = pickle.dumps(clf)
-    return ['random_forest', accuracy, model]
+    return __fit_model('random_forest', clf, x_train, y_train)
 
 #still need to add optimization over hyperparameters
 def adaboost_classifier(x_train, y_train, x_test, y_test):
     clf = AdaBoostClassifier(n_estimators = 100, random_state = 0)
-    clf.fit(x_train, y_train)
-    accuracy = clf.score(x_test, y_test)
-    model = pickle.dumps(clf)
-    return ['adaboost', accuracy, model]
+    return __fit_model('adaboost', clf, x_train, y_train)
 
 def native_bayes(x_train, y_train, x_test, y_test):
     clf = GaussianNB()
-    clf.fit(x_train, y_train)
-    accuracy = clf.score(x_test, y_test)
-    model = pickle.dumps(clf)
-    return ['native_bayes', accuracy, model]
+    return __fit_model('native_bayes', clf, x_train, y_train)
 
 def quadratic_discriminant(x_train, y_train, x_test, y_test):
     clf = QuadraticDiscriminantAnalysis()
-    clf.fit(x_train, y_train)
-    accuracy = clf.score(x_test, y_test)
-    model = pickle.dumps(clf)
-    return ['quadratic_discriminant', accuracy, model]
+    return __fit_model('quadratic_discriminant', clf, x_train, y_train)
 
 #Do I want to add something like rerunning classifiers with the highest accuracies
 #to get a better estimate of mean accuracy?
 def easy_classification(x_train, y_train, x_test, y_test):
+    functions = [k_nearest, support_vector_machine, decision_tree_classifier, 
+                 random_forest_classifier, adaboost_classifier, native_bayes]
     results_array = []
-    results_array.append(k_nearest(x_train, y_train, x_test, y_test))
-    print(k_nearest(x_train, y_train, x_test, y_test)[1])
-    results_array.append(support_vector_machine(x_train, y_train, x_test, y_test))
-    print(support_vector_machine(x_train, y_train, x_test, y_test)[1])
-    results_array.append(decision_tree_classifier(x_train, y_train, x_test, y_test))
-    print(decision_tree_classifier(x_train, y_train, x_test, y_test)[1])
-    results_array.append(random_forest_classifier(x_train, y_train, x_test, y_test))
-    print(random_forest_classifier(x_train, y_train, x_test, y_test)[1])
-    results_array.append(adaboost_classifier(x_train, y_train, x_test, y_test))
-    print(adaboost_classifier(x_train, y_train, x_test, y_test)[1])
-    results_array.append(native_bayes(x_train, y_train, x_test, y_test))
-    print(native_bayes(x_train, y_train, x_test, y_test)[1])
+    for f in functions:
+        results = f(x_train, y_train, x_test, y_test)
+        results.array.append(results)
+        print(results[1])
     #quadratic discriminant analysis is not currently working
     #results_array.append(quadratic_discriminant(x_train, y_train, x_test, y_test))
     
-    accuracies_arr = []
-    for row in results_array:
-        accuracies_arr.append(row[1])
+    accuracies_arr = [row[1] for row in results_array]
         
     accuracy_argmax = np.argmax(accuracies_arr)
     classifier = results_array[accuracy_argmax][0]
     model = results_array[accuracy_argmax][2]
+
+    OUTPUT = 'easyml_classifier.pickle'
     
-    with open('easyml_classifier.pickle', 'wb') as f:
+    with open(OUTPUT, 'wb') as f:
         f.write(model)
         f.close()
     
     print(classifier + " model chosen. Yielded max accuracy: " + str(results_array[accuracy_argmax][1]))
-    print("Model saved as 'easyml_classifier.pickle'")
+    print("Model saved as {}".format(OUTPUT))
     return
     
 #main method still work in progress
@@ -198,10 +170,5 @@ def main():
     easy_classification(sk_learn_compatible_normed_x_train, y_train, sk_learn_compatible_normed_x_test, y_test)
     
 if __name__ == '__main__':
-    main()
-
-    
-
-    
-        
+    main()       
         
