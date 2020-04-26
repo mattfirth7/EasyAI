@@ -139,19 +139,13 @@ def quadratic_discriminant(x_train, y_train, x_test, y_test):
 #Do I want to add something like rerunning classifiers with the highest accuracies
 #to get a better estimate of mean accuracy?
 def easy_classification(x_train, y_train, x_test, y_test):
+    functions = [k_nearest, support_vector_machine, decision_tree_classifier, 
+                 random_forest_classifier, adaboost_classifier, native_bayes]
     results_array = []
-    results_array.append(k_nearest(x_train, y_train, x_test, y_test))
-    print(k_nearest(x_train, y_train, x_test, y_test)[1])
-    results_array.append(support_vector_machine(x_train, y_train, x_test, y_test))
-    print(support_vector_machine(x_train, y_train, x_test, y_test)[1])
-    results_array.append(decision_tree_classifier(x_train, y_train, x_test, y_test))
-    print(decision_tree_classifier(x_train, y_train, x_test, y_test)[1])
-    results_array.append(random_forest_classifier(x_train, y_train, x_test, y_test))
-    print(random_forest_classifier(x_train, y_train, x_test, y_test)[1])
-    results_array.append(adaboost_classifier(x_train, y_train, x_test, y_test))
-    print(adaboost_classifier(x_train, y_train, x_test, y_test)[1])
-    results_array.append(native_bayes(x_train, y_train, x_test, y_test))
-    print(native_bayes(x_train, y_train, x_test, y_test)[1])
+    for f in functions:
+        results = f(x_train, y_train, x_test, y_test)
+        results.array.append(results)
+        print(results[1])
     #quadratic discriminant analysis is not currently working
     #results_array.append(quadratic_discriminant(x_train, y_train, x_test, y_test))
     
