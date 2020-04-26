@@ -1,6 +1,7 @@
 # EasyAI
 
-Plug n' Play Machine Learning. EasyAI is a tool designed to lower the barrier to entry to 
+Plug n' Play Machine Learning. 
+EasyAI is a tool designed to lower the barrier to entry to 
 employ Machine Learning models. All that is required is a CSV 
 file and to tell the program whether the target variable is 
 classification or regression.
