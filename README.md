@@ -6,10 +6,8 @@ employ Machine Learning models. All that is required is a CSV
 file and to tell the program whether the target variable is 
 classification or regression.
 
-Note: This tool is currently pre-alpha and while techincally the 
-machine learning methods work, the more important facets of the 
-process, notably separating training and testing data, and 
-normalizing the dependent variables is not operational.
+Note: As of right now this works but is very slow and does not
+have lots of parameter optimization.
 
 
 ## Dependencies

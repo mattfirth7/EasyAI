@@ -54,65 +54,60 @@ def data_norm(x):
         
     return x
 
-def __fit_model(name, clf, x_train, y_train):
+def __fit_model(name, clf, x_train, y_train, x_test, y_test):
     clf.fit(x_train, y_train)
     accuracy = clf.score(x_test, y_test)
     model = pickle.dumps(clf)
     return [name, accuracy, model]
 
+
+
 #still need to add optimization over hyperparameters
 def k_nearest(x_train, y_train, x_test, y_test):
     clf = KNeighborsClassifier(n_neighbors = 3)
-    return __fit_model('k_nearest', clf, x_train, y_train)
+    return __fit_model('k_nearest', clf, x_train, y_train, x_test, y_test)
 
+# poly kernel is not working so it has been removed
 def support_vector_machine(x_train, y_train, x_test, y_test):
+    model_arr = []
     accuracy_arr = []
-    for kernel in ('linear', 'poly', 'rbf'):
+    for kernel in ('linear', 'rbf'):
         clf = svm.SVC(kernel = kernel, gamma = 2)
-        clf.fit(x_train,y_train)
-        
-        accuracy = clf.score(x_test, y_test)
-        accuracy_arr.append(accuracy)
+        model_info = __fit_model(kernel, clf, x_train, y_train, x_test, y_test)
+        model_arr.append(model_info)
+        accuracy_arr.append(model_info[1])
         
     accuracy_argmax = np.argmax(accuracy_arr)
-    if accuracy_argmax == 0:
-        clf = svm.SVC(kernel = 'linear', gamma = 2)
-        return __fit_model('linear', clf, x_train, y_train)
-    elif accuracy_argmax == 1:
-        clf = svm.SVC(kernel = 'poly', gamma = 2)
-        return __fit_model('poly', clf, x_train, y_train)
-    else:
-        model = pickle.dumps(clf)
-        return ['rbf', accuracy, model]
+    return model_arr[accuracy_argmax]
 
 #still need to add optimization over hyperparameters
 def gaussian_process_classifier(x_train, y_train, x_test, y_test):
     kernel = 1.0 * RBF(1.0)
     clf = GaussianProcessClassifier(kernel = kernel, random_state = 0)
-    return __fit_model('gaussian_process', clf, x_train, y_train)
+    return __fit_model('gaussian_process', clf, x_train, y_train, x_test, y_test)
 
 #still need to add optimization over hyperparamters
 def decision_tree_classifier(x_train, y_train, x_test, y_test):
     clf = DecisionTreeClassifier(random_state = 0)
-    return __fit_model('decision_tree', clf, x_train, y_train)
+    return __fit_model('decision_tree', clf, x_train, y_train, x_test, y_test)
 
 #still need to add optimization over hyperparameters
 def random_forest_classifier(x_train, y_train, x_test, y_test):
     clf = RandomForestClassifier(max_depth = 2, random_state = 0)
-    return __fit_model('random_forest', clf, x_train, y_train)
+    return __fit_model('random_forest', clf, x_train, y_train, x_test, y_test)
 
 #still need to add optimization over hyperparameters
 def adaboost_classifier(x_train, y_train, x_test, y_test):
     clf = AdaBoostClassifier(n_estimators = 100, random_state = 0)
-    return __fit_model('adaboost', clf, x_train, y_train)
+    return __fit_model('adaboost', clf, x_train, y_train, x_test, y_test)
 
 def native_bayes(x_train, y_train, x_test, y_test):
     clf = GaussianNB()
-    return __fit_model('native_bayes', clf, x_train, y_train)
+    return __fit_model('native_bayes', clf, x_train, y_train, x_test, y_test)
 
 def quadratic_discriminant(x_train, y_train, x_test, y_test):
     clf = QuadraticDiscriminantAnalysis()
-    return __fit_model('quadratic_discriminant', clf, x_train, y_train)
+    return __fit_model('quadratic_discriminant', clf, x_train, y_train, x_test, y_test)
 
 #Do I want to add something like rerunning classifiers with the highest accuracies
 #to get a better estimate of mean accuracy?
@@ -122,7 +117,7 @@ def easy_classification(x_train, y_train, x_test, y_test):
     results_array = []
     for f in functions:
         results = f(x_train, y_train, x_test, y_test)
-        results.array.append(results)
+        results_array.append(results)
         print(results[1])
     #quadratic discriminant analysis is not currently working
     #results_array.append(quadratic_discriminant(x_train, y_train, x_test, y_test))
@@ -133,7 +128,7 @@ def easy_classification(x_train, y_train, x_test, y_test):
     classifier = results_array[accuracy_argmax][0]
     model = results_array[accuracy_argmax][2]
 
-    OUTPUT = 'easyml_classifier.pickle'
+    OUTPUT = 'easyai_classifier.pickle'
     
     with open(OUTPUT, 'wb') as f:
         f.write(model)
@@ -143,18 +138,21 @@ def easy_classification(x_train, y_train, x_test, y_test):
     print("Model saved as {}".format(OUTPUT))
     return
     
-#main method still work in progress
 def main():
     print("Make sure the label variable is the last column in the csv")
     tkinter.Tk().withdraw()
     input_filename = askopenfilename()
     input_array = np.genfromtxt(input_filename, delimiter = ',', skip_header = 1)
-    y = input_array[-1]
-    x = np.delete(input_array,-1,0)
-    print(x[:5])
-    sklearn_compatible_array = convert_to_sklearn_shape(x)
-    print(sklearn_compatible_array[:5])
-    x_train, x_test, y_train, y_test = train_test_split(sklearn_compatible_array,y,test_size=0.2)
+    x = []
+    y = []
+    for row in input_array:
+        y.append(row[-1])
+        x.append(row[:-1])
+        
+    
+    x_train, x_test, y_train, y_test = train_test_split(x,y,test_size=0.2)
+    print(len(x_train))
+    print(len(x_test))
     print(x_train[:5])
     analysis_shape_x_train = convert_to_analysis_shape(x_train)
     analysis_shape_normed_x_train = data_norm(analysis_shape_x_train)
@@ -162,6 +160,8 @@ def main():
     analysis_shape_x_test = convert_to_analysis_shape(x_test)
     analysis_shape_normed_x_test = data_norm(analysis_shape_x_test)
     print(analysis_shape_normed_x_test[:5])
+    
+    
     
     sk_learn_compatible_normed_x_train = convert_to_sklearn_shape(analysis_shape_normed_x_train)
     sk_learn_compatible_normed_x_test = convert_to_sklearn_shape(analysis_shape_normed_x_test)
