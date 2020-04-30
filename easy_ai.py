@@ -140,12 +140,12 @@ def easy_classification(x_train, y_train, x_test, y_test):
     return
 
 
-
+# need to fix this to use adjusted r2
 def __fit_rgr_model(name, rgr, x_train, y_train, x_test, y_test):
     rgr.fit(x_train, y_train)
-    accuracy = rgr.score(x_test, y_test)
+    r2 = rgr.score(x_test, y_test)
     model = pickle.dumps(rgr)
-    return [name, accuracy, model]
+    return [name, r2, model]
 
 def ordinary_least_squares(x_train, y_train, x_test, y_test):
     rgr = linear_model.LinearRegression()
@@ -185,11 +185,11 @@ def easy_regression(x_train, y_train, x_test, y_test):
         results_array.append(results)
         print(results[1])
     
-    accuracies_arr = [row[1] for row in results_array]
+    r2_arr = [row[1] for row in results_array]
         
-    accuracy_argmax = np.argmax(accuracies_arr)
-    regr_model = results_array[accuracy_argmax][0]
-    model = results_array[accuracy_argmax][2]
+    r2_argmax = np.argmax(r2_arr)
+    regr_model = results_array[r2_argmax][0]
+    model = results_array[r2_argmax][2]
 
     OUTPUT = 'easyai_regression.pickle'
     
@@ -197,7 +197,7 @@ def easy_regression(x_train, y_train, x_test, y_test):
         f.write(model)
         f.close()
     
-    print(regr_model + " model chosen. Yielded max accuracy: " + str(results_array[accuracy_argmax][1]))
+    print(regr_model + " model chosen. Yielded max accuracy: " + str(results_array[r2_argmax][1]))
     print("Model saved as {}".format(OUTPUT))
     return
 
