@@ -9,7 +9,7 @@ from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 import pickle
-import validation
+import easy_validation
 
 
 def __fit_clf_model(name, clf, x_train, y_train, x_test, y_test):
@@ -22,7 +22,7 @@ def __fit_clf_model(name, clf, x_train, y_train, x_test, y_test):
         f.write(model)
         f.close()
     
-    accuracy = validation.boostrapping_validation(x_test, y_test)
+    accuracy = easy_validation.boostrapping_validation(x_test, y_test)
     os.remove('temp.pickle')
     return [name, accuracy, model]
 

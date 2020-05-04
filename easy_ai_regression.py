@@ -1,13 +1,25 @@
+import os
 import numpy as np
 from sklearn import svm
 from sklearn import linear_model
 import pickle
+import easy_validation
 
 # need to fix this to use adjusted r2
 def __fit_rgr_model(name, rgr, x_train, y_train, x_test, y_test):
     rgr.fit(x_train, y_train)
-    r2 = rgr.score(x_test, y_test)
     model = pickle.dumps(rgr)
+    
+        
+    OUTPUT = 'temp.pickle'
+    
+    with open(OUTPUT, 'wb') as f:
+        f.write(model)
+        f.close()
+    
+    r2 = easy_validation.boostrapping_validation(x_test, y_test)
+    os.remove('temp.pickle')
+    
     return [name, r2, model]
 
 def ordinary_least_squares(x_train, y_train, x_test, y_test):
