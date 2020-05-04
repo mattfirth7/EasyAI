@@ -10,13 +10,10 @@ import easy_ai_classification
 '''To anyone reading this: Yes I know this code would be much shorter by just
 looping over all the classifiers and their hyperparameters from an array or something
 but this is vastly more readable as a first draft
-
-NOT OPERATIONAL: MAIN METHOD INCOMPLETE AND UNTESTED
 '''
 
 
 
-#Need to find a way to take all of the first values of the first n columns
 
 def convert_to_sklearn_shape(x):
     converted_data = []
@@ -27,6 +24,9 @@ def convert_to_sklearn_shape(x):
         converted_data.append(row)
     return converted_data
 
+#In order to normalize data, each feature must be turned into its own column
+#rather than having observations of each feature and a label as a column
+#so that statistics like the mean and standard deviation can be calculated
 def convert_to_analysis_shape(x):
     converted_data = []
     for entry in x[0]:
@@ -37,6 +37,9 @@ def convert_to_analysis_shape(x):
     
     return converted_data
 
+#Assumes features follow a normal distribution and converts them to z scores
+#Will be looking into different methods of normalization that don't assume
+#normal distribution. Perhaps dividing by L2 Norm?
 def data_norm(x):
     for feature in x:
         mean = np.mean(feature)
