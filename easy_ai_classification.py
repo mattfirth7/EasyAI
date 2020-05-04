@@ -1,3 +1,4 @@
+import os
 import numpy as np
 from sklearn import preprocessing, neighbors, svm
 from sklearn.neighbors import KNeighborsClassifier
@@ -8,11 +9,21 @@ from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 import pickle
+import validation
+
 
 def __fit_clf_model(name, clf, x_train, y_train, x_test, y_test):
     clf.fit(x_train, y_train)
-    accuracy = clf.score(x_test, y_test)
     model = pickle.dumps(clf)
+    
+    OUTPUT = 'temp.pickle'
+    
+    with open(OUTPUT, 'wb') as f:
+        f.write(model)
+        f.close()
+    
+    accuracy = validation.boostrapping_validation(x_test, y_test)
+    os.remove('temp.pickle')
     return [name, accuracy, model]
 
 

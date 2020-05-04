@@ -6,6 +6,7 @@ import easy_ai_regression
 import easy_ai_classification
 
 
+
 '''To anyone reading this: Yes I know this code would be much shorter by just
 looping over all the classifiers and their hyperparameters from an array or something
 but this is vastly more readable as a first draft
